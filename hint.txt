@@ -1,0 +1,81 @@
+npm run start:dev 
+
+nest new project-name
+
+nest generate module moduleName  ---> to generate module
+
+nest generate co /users/controllers/users   
+
+install mysql------------->     npm add @nestjs/typeorm typeorm mysql2
+
+
+
+TrailheadRank 
+{  
+    __typename  
+    title  
+    requiredPointsSum  
+    requiredBadgesCount  
+    imageUrl
+} 
+    PublicProfile 
+    {  
+        __typename  
+        trailheadStats 
+        {    
+            __typename    
+            earnedPointsSum    
+            earnedBadgesCount    
+            completedTrailCount    
+            rank{      
+                    __typename
+                    title
+                    requiredPointsSum
+                    requiredBadgesCount
+                    imageUrl    
+                }    
+            nextRank{      
+                        __typename
+                        imageUrl
+                        requiredBadgesCount
+                        requiredPointsSum
+                        title   
+                }  
+        }
+    }
+}
+
+-----> Rank
+query GetTrailheadRank($trailblazerId: String, $queryProfile: Boolean!) {
+      profile(trailblazerId: $trailblazerId) @include(if: $queryProfile) {    
+        ... on PublicProfile {      ...PublicProfile    }    
+        ... on PrivateProfile {      __typename    }  }
+}
+fragment TrailheadRank on TrailheadRank {  __typename  title  requiredPointsSum  requiredBadgesCount  imageUrl}fragment PublicProfile on PublicProfile {  __typename  trailheadStats {    __typename    earnedPointsSum    earnedBadgesCount    completedTrailCount    rank {      ...TrailheadRank    }    nextRank {      ...TrailheadRank    }  }}
+
+
+----> superbadge
+query GetTrailheadBadges($trailblazerId: String, $queryProfile: Boolean = false, $count: Int = 8, $after: String = null, $filter: AwardTypeFilter = null) {  profile(trailblazerId: $trailblazerId) @include(if: $queryProfile) {    __typename    ... on PublicProfile {      ...ProfileBadges    }  }}
+
+fragment EarnedAward on EarnedAwardBase {  __typename  id  award {    __typename    id    title    type    icon    content {      __typename      webUrl      description    }  }}fragment EarnedAwardSelf on EarnedAwardSelf {  __typename  id  award {    __typename    id    title    type    icon    content {      __typename      webUrl      description    }  }  earnedAt  earnedPointsSum}fragment StatsBadgeCount on TrailheadProfileStats {  __typename  earnedBadgesCount  superbadgeCount}fragment ProfileBadges on PublicProfile {  __typename  trailheadStats {    ... on TrailheadProfileStats {      ...StatsBadgeCount    }  }  earnedAwards(first: $count, after: $after, awardType: $filter) {    edges {      node {        ... on EarnedAwardBase {          ...EarnedAward        }        ... on EarnedAwardSelf {          ...EarnedAwardSelf        }      }    }    pageInfo {      ...PageInfoBidirectional    }  }}fragment PageInfoBidirectional on PageInfo {  __typename  endCursor  hasNextPage  startCursor  hasPreviousPage}
+
+
+------> Badge
+query GetTrailheadBadges($trailblazerId: String, $queryProfile: Boolean = false, $count: Int = 8, $after: String = null, $filter: AwardTypeFilter = null) {  profile(trailblazerId: $trailblazerId) @include(if: $queryProfile) {    __typename    ... on PublicProfile {      ...ProfileBadges    }  }}
+
+fragment EarnedAward on EarnedAwardBase {  __typename  id  award {    __typename    id    title    type    icon    content {      __typename      webUrl      description    }  }}fragment EarnedAwardSelf on EarnedAwardSelf {  __typename  id  award {    __typename    id    title    type    icon    content {      __typename      webUrl      description    }  }  earnedAt  earnedPointsSum}fragment StatsBadgeCount on TrailheadProfileStats {  __typename  earnedBadgesCount  superbadgeCount}fragment ProfileBadges on PublicProfile {  __typename  trailheadStats {    ... on TrailheadProfileStats {      ...StatsBadgeCount    }  }  earnedAwards(first: $count, after: $after, awardType: $filter) {    edges {      node {        ... on EarnedAwardBase {          ...EarnedAward        }        ... on EarnedAwardSelf {          ...EarnedAwardSelf        }      }    }    pageInfo {      ...PageInfoBidirectional    }  }}fragment PageInfoBidirectional on PageInfo {  __typename  endCursor  hasNextPage  startCursor  hasPreviousPage}
+
+Needs to work on logics.
+He is not answerable on corss queries.
+Hard Coded.
+
+******************************************************************************
+
+axios code 
+
+// const request = XMLHttpRequest();
+    const res = await axios.get('https://trailblazer.me/id/saloni', {
+      // headers: { 'Content-Type': 'text/html' },
+      responseType: 'blob',
+    });
+    console.log(res.data);
